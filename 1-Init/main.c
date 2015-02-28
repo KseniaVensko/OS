@@ -7,6 +7,8 @@
 #include <unistd.h>     // getppid
 #include <stdlib.h>     // exit
 
+#include <log.h>
+
 int main(void) {
 
     struct rlimit flim;
@@ -31,7 +33,7 @@ int main(void) {
     }
 
     chdir("/");
-
+//    fprint("Init start");
     openlog("Daemon Init", LOG_PID | LOG_CONS, LOG_DAEMON);
     syslog(LOG_INFO, "Init start");
     closelog();

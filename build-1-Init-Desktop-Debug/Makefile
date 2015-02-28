@@ -45,8 +45,10 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = ../1-Init/main.c 
-OBJECTS       = main.o
+SOURCES       = ../1-Init/main.c \
+		../1-Init/log.c 
+OBJECTS       = main.o \
+		log.o
 DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/common/shell-unix.conf \
 		/usr/lib/qt/mkspecs/common/unix.conf \
@@ -171,7 +173,8 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/features/exceptions.prf \
 		/usr/lib/qt/mkspecs/features/yacc.prf \
 		/usr/lib/qt/mkspecs/features/lex.prf \
-		../1-Init/1-Init.pro ../1-Init/main.c
+		../1-Init/1-Init.pro ../1-Init/main.c \
+		../1-Init/log.c
 QMAKE_TARGET  = 1-Init
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = 1-Init
@@ -489,8 +492,11 @@ compiler_clean:
 
 ####### Compile
 
-main.o: ../1-Init/main.c 
+main.o: ../1-Init/main.c ../1-Init/log.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o main.o ../1-Init/main.c
+
+log.o: ../1-Init/log.c 
+	$(CC) -c $(CFLAGS) $(INCPATH) -o log.o ../1-Init/log.c
 
 ####### Install
 

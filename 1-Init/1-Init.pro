@@ -3,8 +3,12 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += main.c
+SOURCES += main.c \
+    log.c
 
 include(deployment.pri)
 qtcAddDeployment()
+
+HEADERS += \
+    log.h
 
