@@ -3,8 +3,17 @@ CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += main.c \
-    log.c
+configPr1 {
+TARGET = pr1
+SOURCES += pr1.c
+}
+
+configMain {
+TARGET = main
+SOURCES += main.c
+}
+
+SOURCES += log.c \
 
 include(deployment.pri)
 qtcAddDeployment()
