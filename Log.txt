@@ -1,1 +1,34 @@
-1246 : Init start
+4780 : buffer
+4780 : /home/ksenia/OS/pr1-Debug/pr1 -2 w
+
+4780 : name
+4780 : /home/ksenia/OS/pr1-Debug/pr1
+4780 : keys
+4780 : /home/ksenia/OS/pr1-Debug/pr1
+4780 : -2
+4780 : parent should create pid file here
+4780 : buffer
+4780 : /home/ksenia/OS/pr1-Debug/pr1 -4 w
+
+4780 : name
+4780 : /home/ksenia/OS/pr1-Debug/pr1
+4780 : keys
+4780 : /home/ksenia/OS/pr1-Debug/pr1
+4780 : -4
+4780 : parent should create pid file here
+4780 : buffer
+4780 : /bin/ls -l w
+
+4780 : name
+4780 : /bin/ls
+4780 : keys
+4780 : /bin/ls
+4780 : -l
+4780 : parent should create pid file here
+4780 : 
+4781 : I`m working
+4782 : I`m working
+4781 : I`m working
+4782 : I`m working
+4782 : I`m working
+4782 : I`m working

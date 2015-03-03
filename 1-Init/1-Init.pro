@@ -14,10 +14,12 @@ SOURCES += main.c
 }
 
 SOURCES += log.c \
+    read_files.c
 
 include(deployment.pri)
 qtcAddDeployment()
 
 HEADERS += \
-    log.h
+    log.h \
+    read_files.h
 

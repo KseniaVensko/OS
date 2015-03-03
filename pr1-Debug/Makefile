@@ -46,9 +46,11 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = ../1-Init/pr1.c \
-		../1-Init/log.c 
+		../1-Init/log.c \
+		../1-Init/read_files.c 
 OBJECTS       = pr1.o \
-		log.o
+		log.o \
+		read_files.o
 DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/common/shell-unix.conf \
 		/usr/lib/qt/mkspecs/common/unix.conf \
@@ -174,7 +176,8 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/features/yacc.prf \
 		/usr/lib/qt/mkspecs/features/lex.prf \
 		../1-Init/1-Init.pro ../1-Init/pr1.c \
-		../1-Init/log.c
+		../1-Init/log.c \
+		../1-Init/read_files.c
 QMAKE_TARGET  = pr1
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = pr1
@@ -497,6 +500,9 @@ pr1.o: ../1-Init/pr1.c ../1-Init/log.h
 
 log.o: ../1-Init/log.c 
 	$(CC) -c $(CFLAGS) $(INCPATH) -o log.o ../1-Init/log.c
+
+read_files.o: ../1-Init/read_files.c 
+	$(CC) -c $(CFLAGS) $(INCPATH) -o read_files.o ../1-Init/read_files.c
 
 ####### Install
 
