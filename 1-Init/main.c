@@ -10,6 +10,7 @@
 #include <read_files.h>
 #include <log.h>
 #define CONFIG "/home/ksenia/OS/build-1-Init/1-Init.conf"
+#define MAXPROC 10
 
 
 int main(int argc, char* argv[]) {
@@ -36,26 +37,27 @@ int main(int argc, char* argv[]) {
     }
 
     chdir("/");
-//    fprint("Init start");
+    fprint("Init start");
     openlog("Daemon Init", LOG_PID | LOG_CONS, LOG_DAEMON);
     syslog(LOG_INFO, "Init start");
     closelog();
 
-    /*
-     table - двумерный массив, pid - [1,0], где 1 - wait, 0 - re
-     */
+    pid_t* pid_list = (pid_t*) malloc(sizeof(pid_t) * MAXPROC);
+    char* r_w_list = (char*) malloc(sizeof(char) * MAXPROC);
+    char** keys = (char**) malloc(sizeof(char**) * MAXPROC);
 
-//    int** table = (int**) malloc(sizeof(int*) * count);
+    int child_count = read_conf(CONFIG, pid_list, r_w_list, keys);
 
-//    for (int i = 0; i < count; i++) {
-//        table[i] = (int*) malloc(sizeof(int) * (string_length + 1));
+    follow_childs(pid_list, r_w_list, child_count, keys);
+
+//    int i;
+//    for (i = 0; i < MAXPROC; ++i) {
+//        free(keys[i]);
 //    }
-
-    //    char* current_dir = get_current_dir_name();             // need to free()
-        //readlink("/proc/pid/exe");
-
-    read_conf(CONFIG);
-
+    free(keys);
+    free(pid_list);
+    free(r_w_list);
+    fprint("Init ends");
     return 0;
 }
 
