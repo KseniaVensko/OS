@@ -22,8 +22,10 @@ char** str_split(char* str, const char delim) {
     /* Count how many elements will be extracted. */
     while (*tmp) {
         if (delim == *tmp) {
-            count++;
-            last_comma = tmp;
+            if (tmp != str) {           // TODO: вроде правильно, но проверь
+                count++;
+                last_comma = tmp;
+            }
         }
         tmp++;
     }
@@ -79,10 +81,12 @@ pid_t exec_program(char** keys, char* program_name, char mode) {
 
 void create_pid_file(pid_t pid, char* name) {   // TODO: add errorhandlers
     // /tmp/name_of_file.pid <- pid
-    char filename_dest[50];
 
-    strcpy(filename_dest, "/tmp/pids/");        //TODO: don`t forget to change
-    strcat(filename_dest, name);
+
+    char* chr = strrchr(name, '/');
+    char filename_dest[50];
+    strcpy(filename_dest, "/tmp/pids");        //TODO: don`t forget to change
+    strcat(filename_dest, chr);
     strcat(filename_dest, ".pid");
     FILE* pid_file = fopen (filename_dest, "a+");
     fprintf(pid_file, "%d\n", pid);
@@ -140,7 +144,7 @@ for (i = 0; i < keys_count; ++i) {
                     //write_to_table();
                     if (pid != 0) {
 fprint("parent should create pid file here");
-                        //create_pid_file(pid, program_name);
+                        create_pid_file(pid, program_name);
                     }
                 }
                 else {
