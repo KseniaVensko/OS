@@ -37,10 +37,9 @@ int main(int argc, char* argv[]) {
     }
 
     chdir("/");
-    fprint("Init start");
+
     openlog("Daemon Init", LOG_PID | LOG_CONS, LOG_DAEMON);
-    syslog(LOG_INFO, "Init start");
-    closelog();
+    fprint("Init start");
 
     pid_t* pid_list = (pid_t*) malloc(sizeof(pid_t) * MAXPROC);
     char* r_w_list = (char*) malloc(sizeof(char) * MAXPROC);
@@ -58,6 +57,7 @@ int main(int argc, char* argv[]) {
     free(pid_list);
     free(r_w_list);
     fprint("Init ends");
+    closelog();
     return 0;
 }
 

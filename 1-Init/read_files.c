@@ -100,13 +100,24 @@ void follow_childs(pid_t* pid_list, char* r_w_list, int count, char **keys) {
             if (pid_list[i] == cpid) {
                 if (r_w_list[i] == 'r') {
                     pid_t pid = exec_program(keys, keys[0]);
+
+                    char buf[100];
+
                     if (pid != 0) {
+                        sprintf(buf, "%s %d %s %d", "Child number", pid_list[i], "finished and restart with number", pid);
                         pid_list[i] = pid;
                         r_w_list[i] = 'w';
                         create_pid_file(pid, keys[0]);
                     }
+                    else {
+                        sprintf(buf, "%s %d %s", "Child number", pid_list[i], "had finished and not restarted because of error");
+                    }
+                    fprint(buf);
                 }
                 else {
+                    char buf[50];
+                    sprintf(buf, "%s %d %s", "Child number", pid_list[i], "finished");
+                    fprint(buf);
                     pid_list[i] = 0;
                     count --;
                 }

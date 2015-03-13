@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <syslog.h>
 
 void fprint(char *message) {
-    FILE* log = fopen ("/home/ksenia/OS/Log.txt", "a+");
+
+    syslog(LOG_INFO, message);
+
+    FILE* log = fopen ("/tmp/Log.txt", "a+");
     fprintf(log, "%d : ", getpid());
     fprintf(log, "%s\n", message);
     fflush(log);
