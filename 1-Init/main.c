@@ -7,13 +7,19 @@
 #include <unistd.h>     // getppid, readlink
 #include <stdlib.h>     // exit
 
+#include <string.h>
 #include <read_files.h>
 #include <log.h>
 #define CONFIG "/home/ksenia/OS/build-1-Init/1-Init.conf"
 #define MAXPROC 10
 
-
 int main(int argc, char* argv[]) {
+
+    char conf[100];
+    getcwd(conf, 100);
+    strcat(conf, "/");
+    strcat(conf, "1-Init.conf");
+    //readlink("/proc/pid/exe");
 
     struct rlimit flim;
 
@@ -45,7 +51,7 @@ int main(int argc, char* argv[]) {
     char* r_w_list = (char*) malloc(sizeof(char) * MAXPROC);
     char** keys = (char**) malloc(sizeof(char**) * MAXPROC);
 
-    int child_count = read_conf(CONFIG, pid_list, r_w_list, keys);
+    int child_count = read_conf(conf, pid_list, r_w_list, keys);
 
     follow_childs(pid_list, r_w_list, child_count, keys);
 
