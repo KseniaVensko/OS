@@ -8,12 +8,12 @@
 #include <stdlib.h>     // exit
 
 #include <string.h>
-#include <read_files.h>
+#include <work_with_childs.h>
 #include <log.h>
 #define CONFIG "/home/ksenia/OS/build-1-Init/1-Init.conf"
 #define MAXPROC 10
 
-int main(int argc, char* argv[]) {
+int main() {
 
     char conf[100];
     getcwd(conf, 100);
@@ -53,12 +53,13 @@ int main(int argc, char* argv[]) {
 
     int child_count = read_conf(conf, pid_list, r_w_list, keys);
 
-    follow_childs(pid_list, r_w_list, child_count, keys);
-
-//    int i;
-//    for (i = 0; i < MAXPROC; ++i) {
-//        free(keys[i]);
-//    }
+    if (child_count != 0) {
+        follow_childs(pid_list, r_w_list, child_count, keys);
+    }
+    //    int i;
+    //    for (i = 0; i < MAXPROC; ++i) {
+    //        free(keys[i]);
+    //    }
     free(keys);
     free(pid_list);
     free(r_w_list);

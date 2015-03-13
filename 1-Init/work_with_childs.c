@@ -136,10 +136,15 @@ int read_conf(char *path, pid_t* pid_list, char* r_w_list, char** global_keys) {
     int child_count = 0;
 
     FILE *ptr = fopen(path, "r");
+    if (ptr == NULL) {
+        fprint("Can`t read config file");
+        fprint(strerror(errno));
+        return 0;               // ничего не делаем и даем возможность main подчистить память
+    }
 
     while(1) {
         if(child_count == MAXPROC) {
-            // to log and
+            fprint("Too many childs, I can`t feed them all");// to log and
             break;
         }
         if (!fgets(buf, sizeof(buf), ptr)) {
@@ -148,7 +153,7 @@ int read_conf(char *path, pid_t* pid_list, char* r_w_list, char** global_keys) {
                 break;
             }
             else {                                // ошибка
-                fprint("error");
+                fprint(strerror(errno));
                 break;
             }
         }
@@ -205,7 +210,7 @@ int read_conf(char *path, pid_t* pid_list, char* r_w_list, char** global_keys) {
             keys_count = 0;
         }
         else {
-            fprint("hnya");
+            fprint("Can`t parse config line");
         }
     }
     free(parse_str);
