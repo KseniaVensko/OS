@@ -1,0 +1,112 @@
+#!/bin/sh
+
+INITMES="I wanna play"
+RESPONSEINITMES="Let\`s play"
+FIFO="myfifo"
+TROUBLE="trouble"
+MASTER=0;
+SYMBOL='0'
+
+declare -a field
+#field=( _ \| _ \| _ \n _ \| _ \| _ )
+field=( q w e r t y u i o )
+filed[8]=t
+field[0]=y
+
+sendMessage() {
+	echo "$1" > $FIFO
+}
+
+waitOpponent () {
+while true; do
+	if read line < $FIFO; then
+		echo $line
+		if [ "$line" = "$INITMES" ]; then
+			echo "yep"
+			sendMessage "$RESPONSEINITMES"
+			break
+		fi
+	fi
+done 
+}
+
+sendInitMessage() {
+	sendMessage "$INITMES"
+	if read line < $FIFO; then
+		echo $line
+		if [ "$line" = "$RESPONSEINITMES" ]; then
+			echo "yep-yep"
+		fi
+	fi
+}
+
+justClear() {
+	[ -e "$FIFO" ] && rm $FIFO
+	[ -e "$TROUBLE" ] && rm $TROUBLE
+}
+
+drawGrid() {
+	num=9
+	for ((i=0; i<num; ++i)); do
+	 	echo -n ${field[i]}
+	 	let c=i%3
+	 	if [ $c -eq 2 ]; then
+	 		echo -n \n
+	 	else
+	 		echo -e \|
+	 	fi
+	done
+	#echo -e ${field[*]}
+	
+	# for i in "${field[@]}"; do
+	# 	echo "$i"
+	# done
+}
+
+imMaster() {
+	l=$(mknod "$FIFO" p);
+	echo "Waiting for connection...";
+	MASTER=1;
+	SYMBOL='X';	
+}
+
+################################################################
+# The beggining
+################################################################
+
+clear;
+if [ -a "$FIFO" ]; then
+	if [ -a "$TROUBLE" ]; then
+		echo -e "Something went wrong the last time...Let\`s know why?\n";
+		cat "$TROUBLE" >&2
+		echo -e "\n\nI think that I just pretend that it never had happend and I will just make this stuff work\n";
+		justClear;
+		imMaster;
+	# значит первый экземпляр уже запущен
+	else
+    	echo "Connecting..."
+	fi
+else
+	imMaster;
+fi
+
+# #может понадобиться, если fifo будет закрываться
+# #sleep 10000 > myfifo &
+
+if [ "$MASTER" -eq 0 ]; then
+	sendInitMessage
+else
+	waitOpponent
+fi
+
+################################################################
+# Let`s play now
+################################################################
+
+
+
+#drawGrid
+
+
+justClear;
+
