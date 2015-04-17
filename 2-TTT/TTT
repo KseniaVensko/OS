@@ -2,16 +2,26 @@
 
 INITMES="I wanna play"
 RESPONSEINITMES="Let\`s play"
+WINMES="You win"
+DEADHEAT="Dead heat"
 FIFO="myfifo"
 TROUBLE="trouble"
 MASTER=0;
-SYMBOL='0'
+MYSYMBOL='0'
+OPPONENTSYMBOL='X'
+NUMBERMOVES=0;
 
 declare -a field
-#field=( _ \| _ \| _ \n _ \| _ \| _ )
-field=( q w e r t y u i o )
-filed[8]=t
-field[0]=y
+field=(' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ')
+
+declare -a winCombinations
+winCombinations=()
+
+
+# function cleanup {
+#   rm  -r $FIFO
+# }
+# trap cleanup EXIT
 
 sendMessage() {
 	echo "$1" > $FIFO
@@ -20,9 +30,7 @@ sendMessage() {
 waitOpponent () {
 while true; do
 	if read line < $FIFO; then
-		echo $line
 		if [ "$line" = "$INITMES" ]; then
-			echo "yep"
 			sendMessage "$RESPONSEINITMES"
 			break
 		fi
@@ -33,41 +41,101 @@ done
 sendInitMessage() {
 	sendMessage "$INITMES"
 	if read line < $FIFO; then
-		echo $line
 		if [ "$line" = "$RESPONSEINITMES" ]; then
-			echo "yep-yep"
+		 	echo "Play now"
 		fi
 	fi
 }
 
 justClear() {
-	[ -e "$FIFO" ] && rm $FIFO
-	[ -e "$TROUBLE" ] && rm $TROUBLE
+	[ -a "$FIFO" ] && rm $FIFO
+	[ -f "$TROUBLE" ] && rm $TROUBLE
 }
 
 drawGrid() {
 	num=9
 	for ((i=0; i<num; ++i)); do
-	 	echo -n ${field[i]}
+	 	echo -n "${field[i]}"
 	 	let c=i%3
 	 	if [ $c -eq 2 ]; then
-	 		echo -n \n
+	 		if [ $i -lt 6 ]; then
+	 			echo -e "\n------"
+	 		else
+	 			echo
+	 		fi
 	 	else
-	 		echo -e \|
+	 		echo -n \|
 	 	fi
 	done
-	#echo -e ${field[*]}
-	
-	# for i in "${field[@]}"; do
-	# 	echo "$i"
-	# done
 }
 
 imMaster() {
 	l=$(mknod "$FIFO" p);
 	echo "Waiting for connection...";
 	MASTER=1;
-	SYMBOL='X';	
+	MYSYMBOL='X';
+	OPPONENTSYMBOL='0';	
+}
+
+checkIfDeadHeat() {
+	let "NUMBERMOVES++"
+	if [ "$NUMBERMOVES" -eq 9 ]; then
+		echo "Dead heat"
+		sendMessage "$DEADHEAT"
+		exit;
+	fi
+}
+
+# Как ни прискорбно, просто перебираем все комбинации
+checkIfOpponentWin() {
+	if [[ "${field[0]}" == "$OPPONENTSYMBOL" && "${field[1]}" == "$OPPONENTSYMBOL" && "${field[2]}" == "$OPPONENTSYMBOL" ]] || [[ "${field[3]}" == "$OPPONENTSYMBOL" && "${field[4]}" == "$OPPONENTSYMBOL" && "${field[5]}" == "$OPPONENTSYMBOL" ]]	|| [[ "${field[6]}" == "$OPPONENTSYMBOL" && "${field[7]}" == "$OPPONENTSYMBOL" && "${field[8]}" == "$OPPONENTSYMBOL" ]] || [[ "${field[0]}" == "$OPPONENTSYMBOL" && "${field[3]}" == "$OPPONENTSYMBOL" && "${field[6]}" == "$OPPONENTSYMBOL" ]] || [[ "${field[1]}" == "$OPPONENTSYMBOL" && "${field[4]}" == "$OPPONENTSYMBOL" && "${field[7]}" == "$OPPONENTSYMBOL" ]] || [[ "${field[2]}" == "$OPPONENTSYMBOL" && "${field[5]}" == "$OPPONENTSYMBOL" && "${field[8]}" == "$OPPONENTSYMBOL" ]] || [[ "${field[0]}" == "$OPPONENTSYMBOL" && "${field[4]}" == "$OPPONENTSYMBOL" && "${field[8]}" == "$OPPONENTSYMBOL" ]] || [[ "${field[2]}" == "$OPPONENTSYMBOL" && "${field[4]}" == "$OPPONENTSYMBOL" && "${field[6]}" == "$OPPONENTSYMBOL" ]]; then
+		echo "You loose"
+		sendMessage "$WINMES"
+		exit; 
+	fi
+}	
+
+checkIWin() {
+	if [ "$1" == "$WINMES" ]; then
+		echo "You win"
+		justClear;
+		exit;
+	fi
+}
+
+checkIfCellEmpty() {
+	if [[ "${field[$1]}" == 'X' ||  "${field[$1]}" == '0' ]]; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+makeMove() {
+while true; do
+	read line
+	let "line--"
+	if checkIfCellEmpty "$line"; then
+		break
+	fi
+done
+	field["$line"]="$MYSYMBOL"
+	sendMessage "$line"
+}
+
+waitMove() {
+while true; do
+	if read line < $FIFO; then
+		if [ "$1" == "$DEADHEAT" ]; then
+			echo "Dead Heat"
+			justClear;
+			exit;
+		fi
+		checkIWin "$line"
+		field["$line"]="$OPPONENTSYMBOL"
+		break;
+	fi
+done 
 }
 
 ################################################################
@@ -102,11 +170,23 @@ fi
 ################################################################
 # Let`s play now
 ################################################################
-
-
-
-#drawGrid
-
-
-justClear;
-
+drawGrid;
+if [ "$MASTER" -eq 1 ]; then
+	echo "Your move";
+	makeMove;
+	let "NUMBERMOVES++";
+	clear;
+	drawGrid;
+else
+	echo "Wait opponent"
+fi
+while true; do
+	waitMove;
+	clear;
+	drawGrid;
+	checkIfOpponentWin;
+	checkIfDeadHeat;
+	makeMove;
+	clear;
+	drawGrid;
+done
