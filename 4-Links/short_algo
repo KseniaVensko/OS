@@ -1,0 +1,42 @@
+#!/bin/bash
+
+declare -a links
+declare -a refers
+declare -a groups
+declare count=1;
+
+checkGroups() {
+	for ((j=0; j<${#links[*]}; ++j)); do
+       		 if [ "${groups[j]}" == "" ]; then
+               		 if [ "${refers[j]}" == "${refers[$1]}" ]; then
+                       		 groups[j]=${groups[$1]};
+				((count++));
+               		 fi;
+       		 fi;
+	done;
+	echo "${refers[$1]}   has   $count   symlinks";
+	count=1;
+}
+
+exec 2>/dev/null;
+link=$(find -L -xtype l);
+links=($link);
+
+for ((i=0; i<${#links[*]}; ++i)); do
+       	refers[i]=$(readlink -m "${links[i]}");
+	links[i]=$(echo "${links[i]}" | cut -c3-);
+	#echo "$i   ${links[i]}    ${refers[i]}";
+done
+
+declare k=0;
+for ((i=0; i<${#links[*]}; ++i)); do
+	if [ "${groups[i]}" == "" ];then
+		groups[i]="$k";
+		((k++));
+		checkGroups $i;
+	fi;
+done;
+
+#echo ${groups[@]}
+
+
