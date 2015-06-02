@@ -1,0 +1,4 @@
+Usage:
+./StableSort in1 in2 ... inn out
+If there is some mistakes in in-files, program will try as much as possible to treat them properly.
+For example, if it sees 12.wewe or 12,9 instead 12.9 it will take 12
